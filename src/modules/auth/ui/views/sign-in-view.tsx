@@ -140,7 +140,7 @@ export const SignInView = () => {
                     disabled={pending}
                     variant="outline"
                     type="button"
-                    className="w-full"
+                    className="w-full font-bold"
                   >
                     Google
                   </Button>
@@ -149,7 +149,7 @@ export const SignInView = () => {
                     disabled={pending}
                     variant="outline"
                     type="button"
-                    className="w-full"
+                    className="w-full font-bold"
                   >
                     Github
                   </Button>
