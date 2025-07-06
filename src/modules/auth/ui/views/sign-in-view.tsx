@@ -149,7 +149,12 @@ export const SignInView = () => {
                     disabled={pending}
                     variant="outline"
                     type="button"
-                    className="w-full font-bold"
+                    className="w-full cursor-pointer font-bold"
+                    onClick={async () => {
+                      await authClient.signIn.social({
+                        provider: "github",
+                      });
+                    }}
                   >
                     Github
                   </Button>

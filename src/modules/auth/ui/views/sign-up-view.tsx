@@ -198,6 +198,11 @@ export const SignUpView = () => {
                     variant="outline"
                     type="button"
                     className="w-full font-bold"
+                    onClick={async () => {
+                      await authClient.signIn.social({
+                        provider: "github",
+                      });
+                    }}
                   >
                     Github
                   </Button>
