@@ -1,4 +1,8 @@
+import { useRouter } from "next/navigation";
+import { ChevronDownIcon, CreditCardIcon, LogOutIcon } from "lucide-react";
+
 import { authClient } from "@/lib/auth-client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import {
   DropdownMenu,
@@ -10,11 +14,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { GeneratedAvatar } from "@/components/generated-avatar";
-import { ChevronDownIcon, CreditCardIcon, LogOutIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 export const DashboardUserButton = () => {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const { data, isPending } = authClient.useSession();
 
   const onLogout = async () => {
@@ -31,18 +44,64 @@ export const DashboardUserButton = () => {
     return null;
   }
 
+  if (isMobile) {
+    return (
+      <Drawer>
+        <DrawerTrigger className="border-border/10 flex w-full items-center justify-between gap-x-2 overflow-hidden rounded-lg border bg-white/5 p-3 hover:bg-white/10">
+          {data.user.image ? (
+            <Avatar>
+              <AvatarImage src={data.user.image} />
+            </Avatar>
+          ) : (
+            <GeneratedAvatar
+              seed={data.user.name}
+              variant="initials"
+              className="size-9"
+            />
+          )}
+
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5 overflow-hidden text-left">
+            <p className="w-full truncate text-xs">{data.user.name}</p>
+            <p className="w-full truncate text-xs">{data.user.email}</p>
+          </div>
+
+          <ChevronDownIcon className="size-4 shrink-0" />
+        </DrawerTrigger>
+
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{data.user.name}</DrawerTitle>
+            <DrawerDescription>{data.user.email}</DrawerDescription>
+          </DrawerHeader>
+
+          <DrawerFooter>
+            <Button variant="outline" onClick={() => {}}>
+              <CreditCardIcon className="size-4 text-black" />
+              Billing
+            </Button>
+
+            <Button variant="outline" onClick={onLogout}>
+              <CreditCardIcon className="size-4 text-black" />
+              Logout
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="border-border/10 flex w-full items-center justify-between overflow-hidden rounded-lg border bg-white/5 p-3 hover:bg-white/10">
+      <DropdownMenuTrigger className="border-border/10 flex w-full items-center justify-between gap-x-2 overflow-hidden rounded-lg border bg-white/5 p-3 hover:bg-white/10">
         {data.user.image ? (
-          <Avatar className="mr-3 size-9">
+          <Avatar>
             <AvatarImage src={data.user.image} />
           </Avatar>
         ) : (
           <GeneratedAvatar
             seed={data.user.name}
             variant="initials"
-            className="mr-3 size-9"
+            className="size-9"
           />
         )}
 
