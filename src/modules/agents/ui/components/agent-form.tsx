@@ -103,7 +103,7 @@ export const AgentForm = ({
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Instructions</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
@@ -115,7 +115,7 @@ export const AgentForm = ({
           )}
         />
 
-        <div className="felx justify-between gap-x-2">
+        <div className="flex justify-between gap-x-2">
           {onCancel && (
             <Button
               variant="ghost"
