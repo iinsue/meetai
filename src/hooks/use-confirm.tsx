@@ -6,13 +6,13 @@ import { ResponsiveDialog } from "@/components/responsive-dialog";
 export const useConfirm = (
   title: string,
   description: string,
-): [() => JSX.Element, () => Promise<unknown>] => {
+): [() => JSX.Element, () => Promise<boolean>] => {
   const [promise, setPromise] = useState<{
     resolve: (value: boolean) => void;
   } | null>(null);
 
   const confirm = () => {
-    return new Promise((resolve) => {
+    return new Promise<boolean>((resolve) => {
       setPromise({ resolve });
     });
   };
@@ -31,10 +31,17 @@ export const useConfirm = (
     handleClose();
   };
 
+  const handleDialogOpenChange = (open: boolean) => {
+    if (!open) {
+      promise?.resolve(false);
+      setPromise(null);
+    }
+  };
+
   const ConfirmationDialog = () => (
     <ResponsiveDialog
       open={promise !== null}
-      onOpenChange={handleClose}
+      onOpenChange={handleDialogOpenChange}
       title={title}
       description={description}
     >

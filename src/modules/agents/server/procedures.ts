@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { and, count, desc, eq, getTableColumns, ilike, sql } from "drizzle-orm";
 
@@ -20,7 +20,11 @@ export const agentsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const [updatedAgent] = await db
         .update(agents)
-        .set(input)
+        .set({
+          name: input.name,
+          instructions: input.instructions,
+          updatedAt: sql`now()`,
+        })
         .where(
           and(eq(agents.id, input.id), eq(agents.userId, ctx.auth.user.id)),
         )
