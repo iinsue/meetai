@@ -6,8 +6,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
 
-import { AgentGetOne } from "../../types";
-import { agentsInsertSchema } from "../../schemas";
 import {
   Form,
   FormControl,
@@ -20,6 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { GeneratedAvatar } from "@/components/generated-avatar";
+
+import { AgentGetOne } from "../../types";
+import { agentsInsertSchema } from "../../schemas";
 
 interface AgentFormProps {
   onSuccess?: () => void;
@@ -37,6 +38,25 @@ export const AgentForm = ({
 
   const createAgent = useMutation(
     trpc.agents.create.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(
+          trpc.agents.getMany.queryOptions({}),
+        );
+
+        // TODO: Invalidate free tier usage
+        onSuccess?.();
+      },
+
+      onError: (error) => {
+        toast.error(error.message);
+
+        // TODO: Check if error code is "FORBIDDEN", redirect to "/upgrade"
+      },
+    }),
+  );
+
+  const updateAgent = useMutation(
+    trpc.agents.update.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries(
           trpc.agents.getMany.queryOptions({}),
@@ -68,11 +88,11 @@ export const AgentForm = ({
   });
 
   const isEdit = !!initialValues?.id;
-  const isPending = createAgent.isPending;
+  const isPending = createAgent.isPending || updateAgent.isPending;
 
   const onSubmit = (values: z.infer<typeof agentsInsertSchema>) => {
     if (isEdit) {
-      console.log("TODO: updateAgent");
+      updateAgent.mutate({ ...values, id: initialValues.id });
     } else {
       createAgent.mutate(values);
     }

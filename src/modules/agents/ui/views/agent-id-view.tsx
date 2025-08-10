@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
+import { useState } from "react";
 import { useTRPC } from "@/trpc/client";
 import { VideoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ import { GeneratedAvatar } from "@/components/generated-avatar";
 
 import { useConfirm } from "@/hooks/use-confirm";
 
+import { UpdateAgentDialog } from "../components/update-agent-dialog";
 import { AgentIdViewHeader } from "../components/agent-id-view-header";
 
 interface Props {
@@ -27,6 +29,8 @@ export const AgentIdView = ({ agentId }: Props) => {
   const trpc = useTRPC();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const [updateAgentDialogOpen, setUpdateAgentDialogOpen] = useState(false);
 
   const { data } = useSuspenseQuery(
     trpc.agents.getOne.queryOptions({ id: agentId }),
@@ -63,12 +67,17 @@ export const AgentIdView = ({ agentId }: Props) => {
   return (
     <>
       <RemoveConfirmation />
+      <UpdateAgentDialog
+        open={updateAgentDialogOpen}
+        onOpenChange={setUpdateAgentDialogOpen}
+        initialValues={data}
+      />
 
       <div className="flex flex-1 flex-col gap-y-4 p-4 md:px-8">
         <AgentIdViewHeader
           agentId={agentId}
           agentName={data.name}
-          onEdit={() => {}}
+          onEdit={() => setUpdateAgentDialogOpen(true)}
           onRemove={handleRemoveAgent}
         />
 
